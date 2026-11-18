@@ -1,0 +1,1 @@
+{"description":"Zhield — Shielded or Exposed? A ZIP-321 shielded payment-request builder with a pre-share privacy check, plus a Zcash transaction privacy scanner.","engines":{"node":">=18"},"license":"MIT","name":"zhield","scripts":{"start":"node server.mjs","test":"node --test test/core.test.js"},"type":"module","version":"1.0.0"}

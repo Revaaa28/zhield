@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zhield — Shielded or Exposed? Zcash payment privacy check</title>
+<meta name="description" content="Zhield builds ZIP-321 Zcash payment requests and checks the privacy of an address or transaction before you share it. Shielded or exposed — know before you send.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body>
+<header class="hero">
+  <nav class="nav">
+    <div class="brand"><span class="brand-mark">Z</span> Zhield</div>
+    <div class="nav-links">
+      <a href="#build">Build a request</a>
+      <a href="#check">Check a request</a>
+      <a href="#scan">Scan a transaction</a>
+      <a href="#learn">Learn</a>
+    </div>
+  </nav>
+  <h1>Shielded <span class="or">or</span> Exposed?</h1>
+  <p class="tagline">Zcash gives you a choice: every payment can be private, or public forever.
+  Most people never check which one they are about to make. <strong>Zhield checks for you</strong> —
+  before you share a payment request, and after a payment lands on chain.</p>
+  <div class="hero-cards">
+    <div class="hero-card bad">
+      <div class="hc-title">Transparent payment</div>
+      <div class="hc-body">Sender, recipient and amount are visible to <em>anyone</em>, forever. Like posting your bank statement.</div>
+    </div>
+    <div class="hero-card good">
+      <div class="hc-title">Shielded payment</div>
+      <div class="hc-body">Sender, recipient and amount are hidden by zero-knowledge proofs. Only the fee and the timing are public.</div>
+    </div>
+  </div>
+  <p class="hero-note">Everything on this page runs in your browser. No keys, no accounts, nothing is sent anywhere except the public explorer lookup you start yourself.</p>
+</header>
+
+<main>
+  <!-- ============ BUILD ============ -->
+  <section id="build" class="panel">
+    <h2>1 · Build a payment request <span class="spec">ZIP-321</span></h2>
+    <p class="lede">Fill in where the money should go. Zhield checks the address's privacy <em>as you type</em>,
+    builds a standards-compliant <code>zcash:</code> link and QR code, and refuses the combinations the spec forbids.</p>
+    <div class="grid2">
+      <form id="build-form" autocomplete="off">
+        <label>Recipient address
+          <input id="b-address" type="text" spellcheck="false" placeholder="u1…, zs1…, t1…, tex1…">
+        </label>
+        <div class="row">
+          <label>Amount (ZEC, optional)
+            <input id="b-amount" type="text" inputmode="decimal" spellcheck="false" placeholder="0.25">
+          </label>
+          <label>Label (optional)
+            <input id="b-label" type="text" placeholder="Coffee shop">
+          </label>
+        </div>
+        <label>Memo (shielded addresses only, max 512 bytes)
+          <input id="b-memo" type="text" placeholder="Invoice 42 — thank you!">
+          <span class="hint" id="memo-count">0 / 512 bytes</span>
+        </label>
+        <label>Message shown by wallets (optional)
+          <input id="b-message" type="text" placeholder="Thank you for your purchase">
+        </label>
+      </form>
+      <div>
+        <div id="build-verdict" class="verdict neutral">Paste an address to see its privacy verdict.</div>
+        <div id="build-errors" class="errors" hidden></div>
+        <div id="build-result" hidden>
+          <div class="uri-box">
+            <code id="build-uri"></code>
+            <div class="uri-actions">
+              <button id="copy-uri" type="button">Copy link</button>
+              <a id="open-wallet" href="#" rel="noopener">Open in wallet</a>
+            </div>
+          </div>
+          <div id="qr" class="qr" aria-label="QR code for the payment request"></div>
+          <p class="hint">Anyone with this link or QR can pre-fill the payment in a ZIP-321 wallet. They still approve it before anything moves.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHECK ============ -->
+  <section id="check" class="panel">
+    <h2>2 · Check a request you received</h2>
+    <p class="lede">Someone sent you a <code>zcash:</code> link or QR? Paste it here before you pay.
+    Zhield parses it exactly the way a wallet should — and shows you where the money really goes and how public it will be.</p>
+    <textarea id="c-uri" rows="3" spellcheck="false" placeholder="zcash:u1…?amount=0.25&amp;memo=…"></textarea>
+    <button id="c-run" type="button" class="primary">Check this request</button>
+    <div id="check-errors" class="errors" hidden></div>
+    <div id="check-result"></div>
+  </section>
+
+  <!-- ============ SCAN ============ -->
+  <section id="scan" class="panel">
+    <h2>3 · Scan a transaction</h2>
+    <p class="lede">Paste a transaction ID to look it up on a public explorer, or paste a transaction's raw JSON
+    (from a node or explorer) for an exact, offline classification. Either way you get the same answer a stranger could work out:
+    what this payment revealed, and what it kept hidden.</p>
+    <div class="row">
+      <input id="s-txid" type="text" spellcheck="false" placeholder="Transaction ID (64 hex characters)">
+      <button id="s-fetch" type="button" class="primary">Look up</button>
+    </div>
+    <details class="paste-json">
+      <summary>Or paste raw transaction JSON instead (exact, works offline)</summary>
+      <textarea id="s-json" rows="6" spellcheck="false" placeholder='{"txid":"…","vin":[…],"vout":[…],"vShieldedOutput":[…],"valueBalance":…}'></textarea>
+      <button id="s-run-json" type="button">Classify this JSON</button>
+      <button id="s-example" type="button" class="ghost">Load an example structure</button>
+    </details>
+    <div id="scan-status" class="hint"></div>
+    <div id="scan-result"></div>
+  </section>
+
+  <!-- ============ LEARN ============ -->
+  <section id="learn" class="panel">
+    <h2>4 · The four ways ZEC can move</h2>
+    <p class="lede">Every Zcash payment is one of these. The difference is entirely in which addresses it touches —
+    and it is decided by the wallets involved, often without the user ever being told.</p>
+    <div class="flows">
+      <article class="flow-card" data-flow="t-to-t">
+        <h3>t → t · Transparent</h3>
+        <div class="score score-0">Privacy 0/100</div>
+        <p>Both sides use transparent addresses. Sender, recipient and amount are public — exactly like Bitcoin.</p>
+      </article>
+      <article class="flow-card" data-flow="t-to-z">
+        <h3>t → z · Shielding</h3>
+        <div class="score score-55">Privacy 55/100</div>
+        <p>Money enters the shielded pool. The sender and the amount going in are visible; the recipient and everything after are hidden.</p>
+      </article>
+      <article class="flow-card" data-flow="z-to-t">
+        <h3>z → t · Deshielding</h3>
+        <div class="score score-45">Privacy 45/100</div>
+        <p>Money leaves the pool. The recipient and the amount coming out are visible; the sender and everything before are hidden.</p>
+      </article>
+      <article class="flow-card" data-flow="z-to-z">
+        <h3>z → z · Fully shielded</h3>
+        <div class="score score-100">Privacy 100/100</div>
+        <p>Both sides shielded. Sender, recipient, amount and memo are hidden. Only the fee, block and timestamp are public.</p>
+      </article>
+    </div>
+    <div class="learn-note">
+      <h3>Three things most guides get wrong in 2026</h3>
+      <ul>
+        <li><strong>Ironwood is the current shielded pool.</strong> It activated with NU6.3 on 28 July 2026 and succeeded Orchard, after a soundness flaw was found in Orchard. Current wallets put an Ironwood receiver first in a Unified Address.</li>
+        <li><strong>A Unified Address is not automatically private.</strong> It is a bundle of receivers (ZIP-316) and can include a transparent one. Good wallets prefer shielded receivers — but "u1" alone is a default, not a guarantee.</li>
+        <li><strong>A memo is not a note field.</strong> It is an encrypted 512-byte message that only shielded payments can carry, readable only by the recipient. A payment link that attaches a memo to a transparent address is invalid by spec (ZIP-321).</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p><strong>Zhield</strong> — built for the ZcashIND “Build on Zcash” bounty. Open source under the MIT license.
+  Read-only by design: Zhield never asks for, sees, or could spend your keys.</p>
+  <p class="hint">Address checks verify Bech32/Bech32m checksums for Sapling, Unified and TEX addresses in your browser.
+  Transparent addresses are classified by structure; your wallet remains the final check, as it should be.
+  Transaction lookups use the public Blockchair API from your browser; raw-JSON classification runs fully offline.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
