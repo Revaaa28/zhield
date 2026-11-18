@@ -40,9 +40,8 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 }
 .brand { font-weight: 800; font-size: 22px; letter-spacing: 0.02em; }
 .brand-mark {
-  display: inline-grid; place-items: center;
-  width: 32px; height: 32px; border-radius: 9px;
-  background: var(--gold); color: #161006; font-weight: 900; margin-right: 6px;
+  width: 32px; height: 32px; margin-right: 6px;
+  vertical-align: -8px;
 }
 .nav-links a { color: var(--muted); text-decoration: none; margin-left: 18px; font-size: 15px; }
 .nav-links a:hover { color: var(--gold); }
