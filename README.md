@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="Zhield logo" width="96">
+</p>
+
 # Zhield — Shielded or Exposed?
 
 **A Zcash payment privacy check that runs before you share, and after you receive.**
